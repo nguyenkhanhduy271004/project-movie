@@ -1,10 +1,12 @@
 package nguyenduy.local.movie.controllers.user;
 
+import nguyenduy.local.movie.models.dtos.UserDTO;
 import nguyenduy.local.movie.models.entities.User;
+import nguyenduy.local.movie.models.response.ApiResponse;
 import nguyenduy.local.movie.repositories.UserRepository;
-import nguyenduy.local.movie.resources.SuccessResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,9 +20,16 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<?> profile() {
-    String phoneNumber = "0987654321";
+    String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
     User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new RuntimeException("User không tồn tại"));
-    SuccessResource<User> successResource = new SuccessResource<>("success", user);
-    return ResponseEntity.ok(successResource);
+
+    UserDTO userDTO = UserDTO
+        .builder()
+        .id(user.getId())
+        .phoneNumber(user.getPhoneNumber())
+        .build();
+
+    ApiResponse apiResponse = ApiResponse.success(userDTO);
+    return ResponseEntity.ok(apiResponse);
   }
 }

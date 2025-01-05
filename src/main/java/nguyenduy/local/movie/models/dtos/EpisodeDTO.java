@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class LoginResponse {
-
-  private final String token;
-  private final UserDTO userDTO;
-
+@NoArgsConstructor
+public class EpisodeDTO {
+  private String name;
+  private Integer episodeNumber;
+  private String videoUrl;
 }
+

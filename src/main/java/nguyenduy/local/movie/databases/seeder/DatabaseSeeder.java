@@ -39,15 +39,15 @@ public class DatabaseSeeder implements CommandLineRunner {
   }
 
   private void seedData() {
-    String hashedPassword = passwordEncoder.encode("1234");
-
-    User user1 = new User("0987654321", hashedPassword, "USER");
-    User user2 = new User("0123456789", hashedPassword, "ADMIN");
-
-    entityManager.persist(user1);
-    entityManager.persist(user2);
-
-    System.out.println("User data seeding completed.");
+//    String hashedPassword = passwordEncoder.encode("1234");
+//
+//    User user1 = new User("0987654321", hashedPassword, "USER");
+//    User user2 = new User("0123456789", hashedPassword, "ADMIN");
+//
+//    entityManager.persist(user1);
+//    entityManager.persist(user2);
+//
+//    System.out.println("User data seeding completed.");
 
 //    Movie movie = new Movie();
 //    movie.setName("Đơn vị chiến thuật: Comrades in Arms");

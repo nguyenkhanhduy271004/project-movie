@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -42,5 +44,16 @@ public class BaseEntity implements Serializable {
   @Column(name = "modifiedby")
   @LastModifiedBy
   private String modifiedBy;
+
+  @PrePersist
+  protected void onCreate() {
+    this.createdDate = new Date();
+    this.modifiedDate = new Date();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    this.modifiedDate = new Date();
+  }
 
 }

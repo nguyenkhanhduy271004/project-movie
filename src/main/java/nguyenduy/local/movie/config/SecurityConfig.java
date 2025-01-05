@@ -27,10 +27,10 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/auth/login")
+            .requestMatchers("/api/v1/auth/**")
             .permitAll()
 
-            .requestMatchers("/api/v1/auth/products")
+            .requestMatchers("/api/v1/movie/**")
             .permitAll()
 
             .anyRequest().authenticated()

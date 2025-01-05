@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import nguyenduy.local.movie.models.entities.RefreshToken;
+import nguyenduy.local.movie.repositories.RefreshTokenRepository;
 import nguyenduy.local.movie.services.JwtService;
 import nguyenduy.local.movie.services.impl.CustomUserDetailsService;
-import nguyenduy.local.movie.services.interfaces.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,52 +31,83 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   private final CustomUserDetailsService customUserDetailsService;
   private final ObjectMapper objectMapper;
   private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
-  public void doFilterInternal(
+  protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+    String path = request.getRequestURI();
+    return path.startsWith("/api/v1/auth/login")
+        || path.startsWith("/api/v1/auth/register")
+        || path.startsWith("/api/v1/movie");
+  }
+
+  @Override
+  protected void doFilterInternal(
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-    final String authHeader = request.getHeader("Authorization");
-    final String jwt;
-    final String userId;
+    try {
+      final String authHeader = request.getHeader("Authorization");
+      final String jwt;
+      final String userId;
 
-    if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-      logger.error("Token miss");
-      filterChain.doFilter(request, response);
-      return;
-    }
-    jwt = authHeader.substring(7);
-    userId = jwtService.getUserIdFromJwt(jwt);
-
-    if(userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
-
-      logger.info("userDetails: " + userDetails.getUsername());
-
-      if(!jwtService.isValidToken(jwt, userDetails)) {
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
         sendErrorResponse(
             request, response,
             HttpServletResponse.SC_UNAUTHORIZED,
             "Xác thực không thành công",
             "Không tìm thấy token");
+        return;
       }
 
-//      UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-//          userDetails,
-//          null,
-//          userDetails.getAuthorities()
-//      );
-//
-//      authToken.setDetails(
-//          new WebAuthenticationDetailsSource().buildDetails(request)
-//      );
-//
-//      SecurityContextHolder.getContext().setAuthentication(authToken);
-//      logger.info("Xác thực tài khoản thành công: " + userDetails.getUsername());
+      jwt = authHeader.substring(7);
+      if(!isValidToken(jwt)) {
+        sendErrorResponse(
+            request, response,
+            HttpServletResponse.SC_UNAUTHORIZED,
+            "Xác thực không thành công",
+            "Token không hợp lệ");
+        return;
+      }
+
+      userId = jwtService.getUserIdFromJwt(jwt);
+
+      if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+
+        final String usernameFromToken = jwtService.getUsernameFromJwt(jwt);
+        if(!usernameFromToken.equals(userDetails.getUsername())) {
+          logger.error("Token không hợp lệ");
+          sendErrorResponse(
+              request, response,
+              HttpServletResponse.SC_UNAUTHORIZED,
+              "Xác thực không thành công",
+              "Token không hợp lệ");
+          return;
+        }
+
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities()
+        );
+
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        logger.info("Xác thực tài khoản thành công: " + userDetails.getUsername());
+      }
+      filterChain.doFilter(request, response);
+    } catch (ServletException | IOException  e) {
+      logger.error("Lỗi trong quá trình xác thực JWT", e);
+      sendErrorResponse(
+          request, response,
+          HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "Network Error",
+          e.getMessage());
     }
-    filterChain.doFilter(request, response);
+
   }
 
   private void sendErrorResponse(
@@ -84,7 +115,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       @NonNull HttpServletResponse response,
       int statusCode,
       String error,
-      String message) throws IOException{
+      String message) throws IOException {
     response.setStatus(statusCode);
     response.setContentType("application/json;charset=UTF-8");
     Map<String, Object> errorResponse = new HashMap<>();
@@ -95,7 +126,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     errorResponse.put("path", request.getRequestURI());
 
     String jsonResponse = objectMapper.writeValueAsString(errorResponse);
-
     response.getWriter().write(jsonResponse);
+  }
+
+  private boolean isValidToken(String token) {
+    try {
+      if(jwtService.isTokenExpired(token)) {
+        logger.error("Token đã hết hạn");
+        return false;
+      }
+
+      if(!jwtService.isTokenFormatValid(token)) {
+        logger.error("Token không đúng định dạng");
+        return false;
+      }
+
+      if(!jwtService.isSignatureValid(token)) {
+        logger.error("Chữ ký token không hợp lệ");
+        return false;
+      }
+
+      if(!jwtService.isIssuerToken(token)) {
+        logger.error("Nguồn gốc của token không hợp lệ");
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
   }
 }

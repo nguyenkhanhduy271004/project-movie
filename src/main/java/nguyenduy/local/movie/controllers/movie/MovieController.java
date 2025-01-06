@@ -5,6 +5,7 @@ import java.util.List;
 
 import nguyenduy.local.movie.exceptions.MovieException;
 import nguyenduy.local.movie.models.dtos.MovieDTO;
+import nguyenduy.local.movie.models.request.EpisodeRequest;
 import nguyenduy.local.movie.models.request.MovieRequest;
 import nguyenduy.local.movie.models.response.ApiResponse;
 import nguyenduy.local.movie.resources.SuccessResource;
@@ -27,7 +28,7 @@ public class MovieController {
   public ResponseEntity<?> getAllMovies() {
     try {
       List<MovieDTO> movies = movieService.getAllMoveis();
-      return ResponseEntity.ok(ApiResponse.success(movies));
+      return ResponseEntity.ok(ApiResponse.successWithData(movies, "Lấy dữ liệu phim thành công!", HttpStatus.OK));
     } catch (Exception e) {
       return handleException(e);
     }
@@ -38,9 +39,9 @@ public class MovieController {
   public ResponseEntity<?> getMovieById(@PathVariable("id") Long id) {
     try {
       MovieDTO movieDTO = movieService.findMovieById(id);
-      return ResponseEntity.ok(new SuccessResource<>("success", movieDTO));
+      return ResponseEntity.ok(ApiResponse.successWithData(movieDTO, "Lấy dữ liệu phim với id: " + id + " thành công!", HttpStatus.OK));
     } catch (MovieException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(HttpStatus.NOT_FOUND,e.getMessage()));
     } catch (Exception e) {
       return handleException(e);
     }
@@ -51,19 +52,20 @@ public class MovieController {
   public ResponseEntity<?> createMovie(@Valid @RequestBody MovieRequest movieRequest) {
     try {
       movieService.addMovie(movieRequest);
-      return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Thêm phim thành công"));
+      return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successNoData("Thêm phim thành công", HttpStatus.CREATED));
     } catch (Exception e) {
       return handleException(e);
     }
   }
 
+
   @PutMapping()
   public ResponseEntity<?> updateMovie(@Valid @RequestBody MovieRequest movieRequest) {
     try {
       movieService.updateMovie(movieRequest);
-      return ResponseEntity.ok(ApiResponse.success("Cập nhật phim thành công"));
+      return ResponseEntity.ok(ApiResponse.successNoData("Cập nhật phim thành công", HttpStatus.OK));
     } catch (MovieException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage()));
     } catch (Exception e) {
       return handleException(e);
     }
@@ -74,12 +76,12 @@ public class MovieController {
   public ResponseEntity<?> deleteMovie(@RequestParam(value = "id") Long id) {
     try {
       movieService.deleteMovie(id);
-      return ResponseEntity.ok(ApiResponse.success("Xóa phim thành công"));
+      return ResponseEntity.ok(ApiResponse.successNoData("Xóa phim thành công", HttpStatus.OK));
     } catch (MovieException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(HttpStatus.NOT_FOUND,e.getMessage()));
     } catch (DataAccessException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(ApiResponse.error("Không thể xóa phim: " + e.getMessage()));
+          .body(ApiResponse.error(HttpStatus.BAD_REQUEST,"Xóa phim thất bại!"));
     } catch (Exception e) {
       return handleException(e);
     }
@@ -87,6 +89,6 @@ public class MovieController {
 
 
   private ResponseEntity<?> handleException(Exception e) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Lỗi hệ thống: " + e.getMessage()));
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,"Lỗi hệ thống: " + e.getMessage()));
   }
 }

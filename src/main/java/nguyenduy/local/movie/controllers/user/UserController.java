@@ -5,6 +5,7 @@ import nguyenduy.local.movie.models.entities.User;
 import nguyenduy.local.movie.models.response.ApiResponse;
 import nguyenduy.local.movie.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class UserController {
         .phoneNumber(user.getPhoneNumber())
         .build();
 
-    ApiResponse apiResponse = ApiResponse.success(userDTO);
+    ApiResponse apiResponse = ApiResponse.successWithData(userDTO, "Lấy dữ liệu user thành công", HttpStatus.OK);
     return ResponseEntity.ok(apiResponse);
   }
 }

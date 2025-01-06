@@ -41,18 +41,18 @@ public class AuthController {
   public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterRequest registerRequest) {
     if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(ApiResponse.error("Mật khẩu xác nhận không khớp"));
+          .body(ApiResponse.error(HttpStatus.BAD_REQUEST,"Mật khẩu xác nhận không khớp"));
     }
 
     try {
       userService.register(registerRequest);
-      return ResponseEntity.ok(ApiResponse.success("Đăng ký tài khoản thành công"));
+      return ResponseEntity.ok(ApiResponse.successNoData("Đăng ký tài khoản thành công", HttpStatus.CREATED));
     } catch (UserAlreadyExistsException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(ApiResponse.error(e.getMessage()));
+          .body(ApiResponse.error(HttpStatus.BAD_REQUEST,e.getMessage()));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error("Đã xảy ra lỗi khi đăng ký tài khoản: " + e.getMessage()));
+          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,"Đã xảy ra lỗi khi đăng ký tài khoản: " + e.getMessage()));
     }
   }
 
@@ -93,7 +93,7 @@ public class AuthController {
 
     String newToken = jwtService.generateToken(userId, username);
     String newRefreshToken = jwtService.generateRefreshToken(userId, username);
-    ApiResponse apiResponse = ApiResponse.success(new RefreshTokenResponse(newToken, newRefreshToken));
+    ApiResponse apiResponse = ApiResponse.successWithData(new RefreshTokenResponse(newToken, newRefreshToken), "Refresh token thành công", HttpStatus.OK);
     return ResponseEntity.ok(apiResponse);
   }
 

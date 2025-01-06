@@ -25,7 +25,7 @@ public class MovieDTO {
   private String lang;
   private Integer view;
   private String category;
-  private List<String> actors;
-  private List<String> directors;
-  private List<String> episodes;
+  private List<ActorDTO> actors;
+  private List<DirectorDTO> directors;
+  private List<EpisodeDTO> episodes;
 }

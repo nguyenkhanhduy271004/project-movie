@@ -7,8 +7,11 @@ import java.util.Optional;
 import nguyenduy.local.movie.converter.MovieConverter;
 import nguyenduy.local.movie.exceptions.MovieException;
 import nguyenduy.local.movie.models.dtos.MovieDTO;
+import nguyenduy.local.movie.models.entities.Episode;
 import nguyenduy.local.movie.models.entities.Movie;
+import nguyenduy.local.movie.models.request.EpisodeRequest;
 import nguyenduy.local.movie.models.request.MovieRequest;
+import nguyenduy.local.movie.repositories.EpisodeRepository;
 import nguyenduy.local.movie.repositories.MovieRepository;
 import nguyenduy.local.movie.services.interfaces.IMovieService;
 
@@ -23,6 +26,8 @@ public class MovieServiceImpl implements IMovieService {
   private MovieRepository movieRepository;
   @Autowired
   private MovieConverter movieConverter;
+  @Autowired
+  private EpisodeRepository episodeRepository;
 
   @Override
   public void addMovie(MovieRequest movieRequest) {
@@ -93,4 +98,9 @@ public class MovieServiceImpl implements IMovieService {
       throw new MovieException("Lỗi khi xóa phim: " + e.getMessage());
     }
   }
+
+
+
+
+
 }

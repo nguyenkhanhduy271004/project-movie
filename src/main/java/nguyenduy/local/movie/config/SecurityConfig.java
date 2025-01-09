@@ -1,7 +1,7 @@
 package nguyenduy.local.movie.config;
+
 import lombok.RequiredArgsConstructor;
 import nguyenduy.local.movie.helper.JwtAuthFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,12 +27,8 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/auth/**")
-            .permitAll()
-
-            .requestMatchers("/api/v1/movie/**")
-            .permitAll()
-
+            .requestMatchers("/api/v1/auth/**").permitAll()
+            .requestMatchers("/api/v1/movie/**").permitAll()
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session
@@ -41,5 +37,4 @@ public class SecurityConfig {
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
-
 }

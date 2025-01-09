@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class DirectorController {
   private IDirectorService directorService;
 
   @GetMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'GET', this)")
   public ResponseEntity<?> getAllDirectors() {
     try {
       List<DirectorDTO> directors = directorService.findAll();
@@ -34,6 +36,7 @@ public class DirectorController {
   }
 
   @GetMapping("{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'GET', this)")
   public ResponseEntity<?> getDirectorById(@PathVariable("id") Long id) {
     try {
       DirectorDTO directorDTO = directorService.findById(id);
@@ -46,6 +49,7 @@ public class DirectorController {
   }
 
   @PostMapping()
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<?> createDirector(@Valid @RequestBody DirectorRequest directorRequest) {
     try {
       directorService.create(directorRequest);
@@ -56,6 +60,7 @@ public class DirectorController {
   }
 
   @PutMapping()
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
   public ResponseEntity<?> updateDirector(@Valid @RequestBody DirectorRequest directorRequest) {
     try {
       directorService.update(directorRequest);
@@ -68,6 +73,7 @@ public class DirectorController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
   public ResponseEntity<?> deleteDirector(@PathVariable Long id) {
     try {
       directorService.delete(id);

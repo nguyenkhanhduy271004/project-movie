@@ -10,6 +10,7 @@ import nguyenduy.local.movie.services.interfaces.IEpisodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class EpisodeController {
   private IEpisodeService episodeService;
 
   @PostMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<ApiResponse<Void>> createEpisode(@Valid @RequestBody EpisodeRequest episodeRequest) {
     try {
       episodeService.addEpisode(episodeRequest);
@@ -53,6 +55,7 @@ public class EpisodeController {
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
   public ResponseEntity<ApiResponse<Void>> updateEpisode(@PathVariable Long id, @Valid @RequestBody EpisodeRequest episodeRequest) {
     try {
       episodeRequest.setEpisodeId(id);
@@ -64,6 +67,7 @@ public class EpisodeController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
   public ResponseEntity<ApiResponse<Void>> deleteEpisode(@PathVariable Long id) {
     try {
       episodeService.deleteEpisode(id);

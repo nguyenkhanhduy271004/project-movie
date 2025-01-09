@@ -6,6 +6,7 @@ import nguyenduy.local.movie.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -19,12 +20,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     nguyenduy.local.movie.models.entities.User user = userRepository.findById(Long.parseLong(userId))
         .orElseThrow(() -> new UsernameNotFoundException("User không tồn tại"));
 
+    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole());
+
     return new org.springframework.security.core.userdetails.User(
         user.getPhoneNumber(),
         user.getPassword(),
-        Collections.emptyList()
+        Collections.singletonList(authority)
     );
   }
-
-
 }

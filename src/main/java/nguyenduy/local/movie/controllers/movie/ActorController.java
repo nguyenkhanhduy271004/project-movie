@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class ActorController {
   private IActorService actorService;
 
   @GetMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'GET', this)")
   public ResponseEntity<?> getAllActors() {
     try {
       List<ActorDTO> actors = actorService.findAll();
@@ -33,6 +35,7 @@ public class ActorController {
   }
 
   @GetMapping("{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'GET', this)")
   public ResponseEntity<?> getActorById(@PathVariable("id") Long id) {
     try {
       ActorDTO actorDTO = actorService.findById(id);
@@ -46,6 +49,7 @@ public class ActorController {
   }
 
   @PostMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<ApiResponse<Void>> createActor(@Valid @RequestBody ActorRequest actorRequest) {
     try {
       actorService.create(actorRequest);
@@ -57,6 +61,7 @@ public class ActorController {
   }
 
   @PutMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
   public ResponseEntity<ApiResponse<Void>> updateActor(@Valid @RequestBody ActorRequest actorRequest) {
     try {
       actorService.update(actorRequest);
@@ -70,6 +75,7 @@ public class ActorController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
   public ResponseEntity<ApiResponse<Void>> deleteActor(@PathVariable Long id) {
     try {
       actorService.delete(id);

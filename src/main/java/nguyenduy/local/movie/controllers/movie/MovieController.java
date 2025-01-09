@@ -22,6 +22,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,6 +61,7 @@ public class MovieController {
 
 
   @PostMapping()
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<?> createMovie(@Valid @RequestBody MovieRequest movieRequest) {
     try {
       movieService.addMovie(movieRequest);
@@ -71,6 +73,7 @@ public class MovieController {
 
 
   @PutMapping()
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'UPDATE', this)")
   public ResponseEntity<?> updateMovie(@Valid @RequestBody MovieRequest movieRequest) {
     try {
       movieService.updateMovie(movieRequest);
@@ -84,6 +87,7 @@ public class MovieController {
 
 
   @DeleteMapping
+  @PreAuthorize("@appAuthorizer.authorize(authentication, 'DELETE', this)")
   public ResponseEntity<?> deleteMovie(@RequestParam(value = "id") Long id) {
     try {
       movieService.deleteMovie(id);

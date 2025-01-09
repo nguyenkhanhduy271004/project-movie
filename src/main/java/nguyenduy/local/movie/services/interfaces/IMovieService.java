@@ -9,8 +9,9 @@ import nguyenduy.local.movie.models.request.MovieRequest;
 public interface IMovieService {
 
   void addMovie(MovieRequest movieRequest);
-  List<MovieDTO> getAllMoveis();
+  List<MovieDTO> getAllMoveis(int page, int pageSize);
   MovieDTO findMovieById(Long id);
   void updateMovie(MovieRequest movieRequest);
   void deleteMovie(Long id);
+  List<Movie> searchMovie(String type, String category, String lang, String sortBy);
 }

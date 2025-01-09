@@ -1,6 +1,8 @@
 package nguyenduy.local.movie.controllers.movie;
 
 import jakarta.validation.Valid;
+import nguyenduy.local.movie.constant.SystemConstant;
+import nguyenduy.local.movie.helper.CustomMessage;
 import nguyenduy.local.movie.models.dtos.EpisodeDTO;
 import nguyenduy.local.movie.models.request.EpisodeRequest;
 import nguyenduy.local.movie.models.response.ApiResponse;
@@ -19,53 +21,45 @@ public class EpisodeController {
   @Autowired
   private IEpisodeService episodeService;
 
-
   @PostMapping
   public ResponseEntity<ApiResponse<Void>> createEpisode(@Valid @RequestBody EpisodeRequest episodeRequest) {
     try {
       episodeService.addEpisode(episodeRequest);
       return ResponseEntity.status(HttpStatus.CREATED)
-          .body(ApiResponse.successNoData("Thêm tập thành công", HttpStatus.CREATED));
+          .body(ApiResponse.successNoData(CustomMessage.createSuccess(SystemConstant.EPISODE), HttpStatus.CREATED));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+      return handleException(e);
     }
   }
-
 
   @GetMapping
-  public ResponseEntity<ApiResponse<List<EpisodeDTO>>> getAllEpisodes() {
+  public ResponseEntity<?> getAllEpisodes() {
     try {
       List<EpisodeDTO> episodes = episodeService.getAllEpisodes();
-      return ResponseEntity.ok(ApiResponse.successWithData(episodes, "Lấy danh sách tập phim thành công", HttpStatus.OK));
+      return ResponseEntity.ok(ApiResponse.successWithData(episodes, CustomMessage.getSuccess(SystemConstant.EPISODE), HttpStatus.OK));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+      return handleException(e);
     }
   }
-
 
   @GetMapping("/{id}")
-  public ResponseEntity<ApiResponse<EpisodeDTO>> getEpisodeById(@PathVariable Long id) {
+  public ResponseEntity<?> getEpisodeById(@PathVariable Long id) {
     try {
       EpisodeDTO episode = episodeService.findEpisodeById(id);
-      return ResponseEntity.ok(ApiResponse.successWithData(episode, "Lấy tập phim thành công", HttpStatus.OK));
+      return ResponseEntity.ok(ApiResponse.successWithData(episode, CustomMessage.getWithIdSuccess(id, SystemConstant.EPISODE), HttpStatus.OK));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+      return handleException(e);
     }
   }
-
 
   @PutMapping("/{id}")
   public ResponseEntity<ApiResponse<Void>> updateEpisode(@PathVariable Long id, @Valid @RequestBody EpisodeRequest episodeRequest) {
     try {
       episodeRequest.setEpisodeId(id);
       episodeService.updateEpisode(episodeRequest);
-      return ResponseEntity.ok(ApiResponse.successNoData("Cập nhật tập phim thành công", HttpStatus.OK));
+      return ResponseEntity.ok(ApiResponse.successNoData(CustomMessage.updateSuccess(SystemConstant.EPISODE), HttpStatus.OK));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+      return handleException(e);
     }
   }
 
@@ -73,10 +67,14 @@ public class EpisodeController {
   public ResponseEntity<ApiResponse<Void>> deleteEpisode(@PathVariable Long id) {
     try {
       episodeService.deleteEpisode(id);
-      return ResponseEntity.ok(ApiResponse.successNoData("Xóa tập phim thành công", HttpStatus.OK));
+      return ResponseEntity.ok(ApiResponse.successNoData(CustomMessage.deleteSuccess(SystemConstant.EPISODE), HttpStatus.OK));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+      return handleException(e);
     }
+  }
+
+  private ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, SystemConstant.INTERNAL_SERVER_ERROR));
   }
 }

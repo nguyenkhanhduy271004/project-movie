@@ -33,7 +33,7 @@ public class Movie extends BaseEntity {
   @Column(name = "origin_name")
   private String originName;
 
-  @Column(name = "content")
+  @Column(name = "content", columnDefinition = "TEXT")
   private String content;
 
   @Column(name = "type")

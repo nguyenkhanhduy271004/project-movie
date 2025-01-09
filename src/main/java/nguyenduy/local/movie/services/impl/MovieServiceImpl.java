@@ -7,16 +7,19 @@ import java.util.Optional;
 import nguyenduy.local.movie.converter.MovieConverter;
 import nguyenduy.local.movie.exceptions.MovieException;
 import nguyenduy.local.movie.models.dtos.MovieDTO;
-import nguyenduy.local.movie.models.entities.Episode;
 import nguyenduy.local.movie.models.entities.Movie;
-import nguyenduy.local.movie.models.request.EpisodeRequest;
 import nguyenduy.local.movie.models.request.MovieRequest;
 import nguyenduy.local.movie.repositories.EpisodeRepository;
 import nguyenduy.local.movie.repositories.MovieRepository;
 import nguyenduy.local.movie.services.interfaces.IMovieService;
 
+import nguyenduy.local.movie.specifications.MovieSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,11 +45,12 @@ public class MovieServiceImpl implements IMovieService {
   }
 
   @Override
-  public List<MovieDTO> getAllMoveis() {
+  public List<MovieDTO> getAllMoveis(int page, int pageSize) {
     try {
-      List<Movie> movies = movieRepository.findAll();
+      Pageable paging = PageRequest.of(page, pageSize);
+      Page<Movie> pagedResult = movieRepository.findAll(paging);
       List<MovieDTO> movieDTOs = new ArrayList<>();
-      for (Movie movie : movies) {
+      for (Movie movie : pagedResult.getContent()) {
         MovieDTO movieDTO = movieConverter.movieDtoConverter(movie);
         movieDTOs.add(movieDTO);
       }
@@ -99,7 +103,11 @@ public class MovieServiceImpl implements IMovieService {
     }
   }
 
-
+  @Override
+  public List<Movie> searchMovie(String type, String category, String lang, String sortBy) {
+    Specification<Movie> spec = MovieSpecifications.findMovie(type, category, lang);
+    return movieRepository.findAll(spec);
+  }
 
 
 

@@ -2,7 +2,9 @@ package nguyenduy.local.movie.models.request;
 
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import lombok.Data;
 
+@Data
 public class DirectorRequest {
   private Long id;
 

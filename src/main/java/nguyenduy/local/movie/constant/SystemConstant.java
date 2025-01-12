@@ -6,6 +6,7 @@ public class SystemConstant {
   public static final String ACTOR = "actor";
   public static final String DIRECTOR = "director";
   public static final String EPISODE = "episode";
+  public static final String COMMENT = "comment";
   public static final String INTERNAL_SERVER_ERROR = "Lỗi hệ thống!";
 
 }

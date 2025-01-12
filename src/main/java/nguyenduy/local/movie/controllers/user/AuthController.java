@@ -63,7 +63,7 @@ public class AuthController {
   public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
     Object result = userService.authenticate(loginRequest);
     if(result instanceof LoginResponse loginResponse) {
-      return ResponseEntity.ok(loginResponse);
+      return ResponseEntity.ok(ApiResponse.successWithData(loginResponse, "Đăng nhập thành công", HttpStatus.OK));
     }
     if (result instanceof ErrorResource errorResource) {
       return ResponseEntity.unprocessableEntity().body(errorResource);

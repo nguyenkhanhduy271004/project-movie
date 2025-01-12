@@ -23,7 +23,7 @@ public class EpisodeController {
   private IEpisodeService episodeService;
 
   @PostMapping
-  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
+//  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<ApiResponse<Void>> createEpisode(@Valid @RequestBody EpisodeRequest episodeRequest) {
     try {
       episodeService.addEpisode(episodeRequest);

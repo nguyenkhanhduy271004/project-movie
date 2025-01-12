@@ -61,7 +61,7 @@ public class MovieController {
 
 
   @PostMapping()
-  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
+//  @PreAuthorize("@appAuthorizer.authorize(authentication, 'CREATE', this)")
   public ResponseEntity<?> createMovie(@Valid @RequestBody MovieRequest movieRequest) {
     try {
       movieService.addMovie(movieRequest);

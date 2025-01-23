@@ -28,11 +28,17 @@ public class User extends BaseEntity {
   @Column(name = "role")
   private String role;
 
+  @Column(name = "coin")
+  private double coin;
+
   @OneToOne (mappedBy = "user")
   private RefreshToken refreshToken;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<Comment> comments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<Transaction> transactions = new ArrayList<>();
 
 
 }

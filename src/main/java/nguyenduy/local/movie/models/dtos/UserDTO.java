@@ -15,4 +15,5 @@ public class UserDTO {
 
   private final Long id;
   private final String phoneNumber;
+  private final Double coin;
 }

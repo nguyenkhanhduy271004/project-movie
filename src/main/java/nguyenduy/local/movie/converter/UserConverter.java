@@ -18,6 +18,7 @@ public class UserConverter {
     User user = modelMapper.map(registerRequest, User.class);
     user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
     user.setRole("USER");
+    user.setCoin(0D);
     return user;
   }
 }

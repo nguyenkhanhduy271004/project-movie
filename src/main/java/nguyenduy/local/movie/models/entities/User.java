@@ -1,8 +1,12 @@
 package nguyenduy.local.movie.models.entities;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -31,6 +35,11 @@ public class User extends BaseEntity {
   @Column(name = "coin")
   private double coin;
 
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "user_movies", joinColumns = @JoinColumn(name = "user_id"))
+  @Column(name = "movie_id")
+  private List<Long> movieIds = new ArrayList<>();
+
   @OneToOne (mappedBy = "user")
   private RefreshToken refreshToken;
 
@@ -39,6 +48,7 @@ public class User extends BaseEntity {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<Transaction> transactions = new ArrayList<>();
+
 
 
 }

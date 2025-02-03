@@ -42,6 +42,7 @@ public class MovieController {
       List<MovieDTO> movies = movieService.getAllMoveis(page, pageSize);
       return ResponseEntity.ok(ApiResponse.successWithData(movies, CustomMessage.getSuccess(SystemConstant.MOVIE), HttpStatus.OK));
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       return handleException(e);
     }
   }

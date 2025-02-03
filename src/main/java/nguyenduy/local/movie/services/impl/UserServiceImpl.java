@@ -51,7 +51,7 @@ public class UserServiceImpl implements IUserService{
       }
       String token = jwtService.generateToken(user.getId(), user.getPhoneNumber());
       String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getPhoneNumber());
-      LoginResponse loginResponse = new LoginResponse(token, refreshToken, new UserDTO(user.getId(), user.getPhoneNumber(), user.getCoin()));
+      LoginResponse loginResponse = new LoginResponse(token, refreshToken, new UserDTO(user.getId(), user.getPhoneNumber(), user.getCoin(), user.getMovieIds()));
       return loginResponse;
     } catch (BadCredentialException e) {
       logger.error("Lỗi xác thực : {}", e.getMessage());

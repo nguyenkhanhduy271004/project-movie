@@ -44,12 +44,12 @@ public class Movie extends BaseEntity {
 
   @Column(name = "poster_url")
   private String posterUrl;
+//
+//  @Column(name = "is_copyright")
+//  private boolean isCopyright;
 
-  @Column(name = "is_copyright")
-  private boolean isCopyright;
-
-  @Column(name = "has_sub")
-  private boolean hasSub;
+//  @Column(name = "has_sub")
+//  private boolean hasSub;
 
   @Column(name = "time")
   private String time;
@@ -71,6 +71,9 @@ public class Movie extends BaseEntity {
 
   @Column(name = "category")
   private String category;
+
+  @Column(name = "coin")
+  private Double coin;
 
   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinTable(name = "actor_movie", joinColumns = @JoinColumn(name = "movie_id", nullable = false),

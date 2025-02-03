@@ -26,6 +26,7 @@ public class MovieDTO {
   private Integer view;
   private String category;
   private String time;
+  private Double coin;
   private List<ActorDTO> actors;
   private List<DirectorDTO> directors;
   private List<EpisodeDTO> episodes;
